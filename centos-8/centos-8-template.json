@@ -1,0 +1,72 @@
+{
+    "variables":
+    {
+      "cpu": "2",
+      "ram": "2048",
+      "vm_os_name": "centos",
+      "vm_os_version": "8",
+      "disk_size": "32768",
+      "iso_checksum_type": "sha256",
+      "iso_urls": "http://mirrors.rit.edu/centos/8-stream/isos/x86_64/CentOS-Stream-8-x86_64-20201211-dvd1.iso",
+      "iso_checksum": "24544c943c0f98f3096b027bb59a93b390853b2b3b538e13566515f9121be5fc",
+      "headless": "true",
+      "kickstart_file": "centos-8-kickstart.cfg",
+      "ssh_username": "root",
+      "ssh_password": "Packer"
+    },
+  "builders": [
+    {
+      "name": "{{user `vm_os_name`}}-{{user `vm_os_version`}}-template",
+      "type": "qemu",
+      "format": "qcow2",
+      "accelerator": "kvm",
+      "qemuargs": [[ "-m", "{{user `ram`}}M" ],[ "-smp", "{{user `cpu`}}" ]],
+      "headless": "{{user `headless`}}",
+
+      "net_device": "virtio-net",
+
+      "http_directory": "centos-8/http",
+      "iso_urls": "{{user `iso_urls`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "boot_wait": "40s",
+      "boot_command": [
+        "<up><wait><tab><wait> net.ifnames=0 biosdevname=0 text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{user `kickstart_file`}}<enter><wait>"
+      ],
+
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_wait_timeout": "30m",
+
+      "disk_size": "{{user `disk_size`}}",
+      "disk_discard": "unmap",
+      "disk_compression": true,
+      "disk_interface": "virtio",
+      "disk_cache": "none",
+
+      "shutdown_command": "sudo /usr/sbin/shutdown -h now",
+
+      "output_directory": "packer-{{ build_name }}",
+      "vm_name": "packer-{{ build_name }}.img"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "yum -y upgrade"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": ["systemctl reboot"],
+      "expect_disconnect": true
+    },
+    {
+      "type": "shell",
+      "execute_command": "\"{{ .Path }}\"",
+      "script": "{{template_dir}}/../scripts/rhel_cleanup.sh",
+      "remote_folder": "/root"
+    }
+  ]
+}
