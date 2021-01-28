@@ -19,7 +19,7 @@
       "name": "{{user `vm_os_name`}}-{{user `vm_os_version`}}-template",
       "net_device": "virtio-net",
       "output_directory": "packer-{{ build_name }}",
-      "qemu_binary": "qemu-kvm",
+      "qemu_binary": "/usr/libexec/qemu-kvm",
       "qemuargs": [
         [
           "-m",
