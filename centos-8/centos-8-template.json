@@ -44,6 +44,7 @@
       "inline": [
         "yum -y upgrade"
       ],
+      "remote_folder": "/root",
       "type": "shell"
     },
     {
@@ -51,6 +52,7 @@
       "inline": [
         "systemctl reboot"
       ],
+      "remote_folder": "/root",
       "type": "shell"
     },
     {
