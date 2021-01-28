@@ -56,8 +56,16 @@
       "type": "shell"
     },
     {
-      "execute_command": "\"{{ .Path }}\"",
+      "expect_disconnect": true,
+      "inline": [
+        "mkdir /opt/tmp && chmod 1777 /opt/tmp"
+      ],
       "remote_folder": "/root",
+      "type": "shell"
+    },
+    {
+      "execute_command": "\"{{ .Path }}\"",
+      "remote_folder": "/opt/tmp",
       "script": "{{template_dir}}/../scripts/rhel_cleanup.sh",
       "type": "shell"
     }
