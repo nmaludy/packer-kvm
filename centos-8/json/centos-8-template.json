@@ -35,7 +35,7 @@
       "ssh_timeout": "30m",
       "ssh_username": "{{user `ssh_username`}}",
       "type": "qemu",
-      "vm_name": "packer-{{ build_name }}.img"
+      "vm_name": "packer-{{ build_name }}.qcow2"
     }
   ],
   "post-processors": [],
@@ -74,9 +74,9 @@
     "cpu": "2",
     "disk_size": "32768",
     "headless": "true",
-    "iso_checksum": "7e4dd00f5d06de0a3db39ffe6174393cf4a12ebd87347808c9bd956e39c06237",
+    "iso_checksum": "aaf9d4b3071c16dbbda01dfe06085e5d0fdac76df323e3bbe87cce4318052247",
     "iso_checksum_type": "sha256",
-    "iso_urls": "http://mirrors.rit.edu/centos/8-stream/isos/x86_64/CentOS-Stream-8-x86_64-20210126-dvd1.iso",
+    "iso_urls": "http://mirrors.rit.edu/centos/8/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso",
     "kickstart_file": "centos-8-kickstart.cfg",
     "ram": "2048",
     "ssh_password": "Packer",
