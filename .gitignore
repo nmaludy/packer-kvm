@@ -1,3 +1,5 @@
 packer-*/
 packer_cache/
 packer.log
+*.box
+*.qcow2

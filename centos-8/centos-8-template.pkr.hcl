@@ -10,8 +10,8 @@ variable "disk_size" {
 }
 
 variable "headless" {
-  type    = string
-  default = "true"
+  type    = bool
+  default = true
 }
 
 variable "iso_checksum" {
@@ -25,8 +25,8 @@ variable "iso_checksum_type" {
 }
 
 variable "iso_urls" {
-  type    = string
-  default = "http://mirrors.rit.edu/centos/8/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso"
+  type    = list(string)
+  default = ["http://mirrors.rit.edu/centos/8/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso"]
 }
 
 variable "kickstart_file" {
@@ -49,45 +49,38 @@ variable "ssh_username" {
   default = "root"
 }
 
-variable "vm_os_name" {
-  type    = string
-  default = "centos"
+variable "vagrant_setup" {
+  type    = bool
+  default = true
 }
 
-variable "vm_os_version" {
-  type    = string
-  default = "8"
-}
-
-# could not parse template for following block: "template: hcl2_upgrade:2: bad character U+0060 '`'"
-
-source "qemu" "{{user_`vm_os_name`}}-{{user_`vm_os_version`}}-template" {
+source "qemu" "centos-8-template" {
   accelerator      = "kvm"
-  boot_command     = ["<up><wait><tab><wait> net.ifnames=0 biosdevname=0 text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{user `kickstart_file`}}<enter><wait>"]
+  boot_command     = ["<up><wait><tab><wait> net.ifnames=0 biosdevname=0 text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/${var.kickstart_file}<enter><wait>"]
   boot_wait        = "40s"
   disk_cache       = "none"
   disk_compression = true
   disk_discard     = "unmap"
   disk_interface   = "virtio"
-  disk_size        = "{{user `disk_size`}}"
+  disk_size        = var.disk_size
   format           = "qcow2"
-  headless         = "{{user `headless`}}"
+  headless         = var.headless
   http_directory   = "centos-8/http"
-  iso_checksum     = "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}"
-  iso_urls         = "{{user `iso_urls`}}"
+  iso_checksum     = "${var.iso_checksum_type}:${var.iso_checksum}"
+  iso_urls         = var.iso_urls
   net_device       = "virtio-net"
-  output_directory = "packer-{{ build_name }}"
+  output_directory = "packer-{{build_name}}"
   qemu_binary      = "/usr/libexec/qemu-kvm"
-  qemuargs         = [["-m", "{{user `ram`}}M"], ["-smp", "{{user `cpu`}}"]]
+  qemuargs         = [["-m", "${var.ram}M"], ["-smp", "${var.cpu}"]]
   shutdown_command = "sudo /usr/sbin/shutdown -h now"
-  ssh_password     = "{{user `ssh_password`}}"
+  ssh_password     = var.ssh_password
   ssh_timeout      = "30m"
-  ssh_username     = "{{user `ssh_username`}}"
-  vm_name          = "packer-{{ build_name }}.qcow2"
+  ssh_username     = var.ssh_username
+  vm_name          = "packer-{{build_name}}.qcow2"
 }
 
 build {
-  sources = ["source.qemu.{{user_`vm_os_name`}}-{{user_`vm_os_version`}}-template"]
+  sources = ["source.qemu.centos-8-template"]
 
   provisioner "shell" {
     inline        = ["yum -y upgrade"]
@@ -107,9 +100,23 @@ build {
   }
 
   provisioner "shell" {
-    execute_command = "\"{{ .Path }}\""
+    # execute_command = "\"{{ .Path }}\""
+    remote_folder   = "/opt/tmp"
+    script          = "${path.root}/../scripts/vagrant_setup.sh"
+    environment_vars = [
+      "VAGRANT_SETUP=${var.vagrant_setup}"
+    ]
+  }
+
+  provisioner "shell" {
+    # execute_command = "\"{{ .Path }}\""
     remote_folder   = "/opt/tmp"
     script          = "${path.root}/../scripts/rhel_cleanup.sh"
   }
 
+  # build a Vagrant box too
+  post-processor "vagrant" {
+    # don't delete the qcow2 image
+    keep_input_artifact = true
+  }
 }
