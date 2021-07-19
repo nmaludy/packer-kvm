@@ -20,13 +20,13 @@ System-level packages for libvirt/kvm/quemu
 
 ```
 sudo yum -y install epel-release
-sudo yum -y install libvirt libguestfs-tools qemu-kvm qemu-system-x86  virt-install virt-manager virt-viewer 
+sudo yum -y install libvirt libguestfs-tools qemu-kvm qemu-system-x86  virt-install virt-manager virt-viewer
 ```
 
 
 ## Build directory structure
 
-Each build is contained in its own sub-directory. All files for the build live in 
+Each build is contained in its own sub-directory. All files for the build live in
 that directory.
 
 For CentOS/RHEL builds the directory structure looks like:
@@ -43,8 +43,8 @@ that are necessary to tweak.
 
 
 This will download the ISO needed to build the template (packer caches these ISOs).
-If you would like to use a local ISO, you can download the ISO yourself and tweak the 
-`iso_urls` variable in the format: `file:///path/to/my.iso`, see the 
+If you would like to use a local ISO, you can download the ISO yourself and tweak the
+`iso_urls` variable in the format: `file:///path/to/my.iso`, see the
 [QEMU builder docs](https://www.packer.io/docs/builders/qemu#iso-configuration)
 
 ```
@@ -63,5 +63,5 @@ sudo cp packer-centos-8-template/packer-centos-8-template.img /var/lib/libvirt/i
 ```
 
 The reason we don't default to putting images into `/var/lib/libvirt/images` is that Packer would
-need to be run as root. This is possible and easy to configure using the `output_directory` 
+need to be run as root. This is possible and easy to configure using the `output_directory`
 option in the template file.
