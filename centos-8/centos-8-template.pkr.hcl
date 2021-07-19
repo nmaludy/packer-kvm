@@ -16,7 +16,7 @@ variable "headless" {
 
 variable "iso_checksum" {
   type    = string
-  default = "aaf9d4b3071c16dbbda01dfe06085e5d0fdac76df323e3bbe87cce4318052247"
+  default = "0394ecfa994db75efc1413207d2e5ac67af4f6685b3b896e2837c682221fd6b2"
 }
 
 variable "iso_checksum_type" {
@@ -26,7 +26,7 @@ variable "iso_checksum_type" {
 
 variable "iso_urls" {
   type    = list(string)
-  default = ["http://mirrors.rit.edu/centos/8/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso"]
+  default = ["http://mirrors.rit.edu/centos/8/isos/x86_64/CentOS-8.4.2105-x86_64-dvd1.iso"]
 }
 
 variable "kickstart_file" {
