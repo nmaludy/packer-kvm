@@ -3,3 +3,4 @@ packer_cache/
 packer.log
 *.box
 *.qcow2
+tmp/

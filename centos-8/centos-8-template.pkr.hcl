@@ -9,6 +9,12 @@ variable "disk_size" {
   default = "32768"
 }
 
+variable "disk_format" {
+  # either "qcow2" or "raw"
+  type    = string
+  default = "qcow2"
+}
+
 variable "headless" {
   type    = bool
   default = true
@@ -63,7 +69,7 @@ source "qemu" "centos-8-template" {
   disk_discard     = "unmap"
   disk_interface   = "virtio"
   disk_size        = var.disk_size
-  format           = "qcow2"
+  format           = "${var.disk_format}"
   headless         = var.headless
   http_directory   = "centos-8/http"
   iso_checksum     = "${var.iso_checksum_type}:${var.iso_checksum}"
@@ -76,7 +82,7 @@ source "qemu" "centos-8-template" {
   ssh_password     = var.ssh_password
   ssh_timeout      = "30m"
   ssh_username     = var.ssh_username
-  vm_name          = "packer-{{build_name}}.qcow2"
+  vm_name          = "packer-{{build_name}}.${var.disk_format}"
 }
 
 build {
@@ -116,7 +122,7 @@ build {
 
   # build a Vagrant box too
   post-processor "vagrant" {
-    # don't delete the qcow2 image
+    # don't delete the qcow2/img image
     keep_input_artifact = true
   }
 }
